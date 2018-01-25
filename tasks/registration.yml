@@ -53,3 +53,10 @@
   tags:
     - "rhn"
     - "skip_ansible_lint" # ANSIBLE0012
+
+#Ensure that Red Hat Subscription Manager is not set to use a specific release
+- name "RNH | enable all OS releases"
+  command: "/usr/sbin/subscription-manager release --unset"
+  tags:
+    - "rhn"
+    - "skip_ansible_lint" # ANSIBLE0012
