@@ -67,6 +67,12 @@ You can see example of playbook in playbook_example/config.yml
 
 [playbook readme](./playbook_example/README.rst)
 
+Problems
+--------
+
+TASK [satellite-deployment : RHN | subscribing to the right pool]
+  - Remove the system from its attached subscription to redhat satellite, in the customer portal.
+
 
 License
 -------
@@ -81,3 +87,4 @@ Julio Villarreal Pelegrino <julio@linux.com> more at: http://wwww.juliovillarrea
 **Contributors:**
 
 Petr Balogh - <petr.balogh@gmail.com>
+
