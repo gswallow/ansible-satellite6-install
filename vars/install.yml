@@ -4,7 +4,7 @@ satellite_deployment_packages:
     - "katello"
   "6.2":
     - "satellite"
-  "6.3"
+  "6.3":
     - "satellite"
 
 satellite_deployment_extra_packages:
