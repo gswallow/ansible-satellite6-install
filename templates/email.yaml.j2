@@ -8,7 +8,7 @@ production:
     port: {{ satellite_deployment_email_smtp_port }}
     domain: {{ satellite_deployment_email_smtp_domain }}
     authentication: {{ satellite_deployment_email_smtp_authentication }}
-    {%- if satellite_deployment_email_smtp_username is defined -%}
+    {% if satellite_deployment_email_smtp_username is defined -%}
     user_name: {{ satellite_deployment_email_smtp_username }}
     password: {{ satellite_deployment_email_smtp_password }}
     {%- endif -%}
