@@ -1,0 +1,8 @@
+#Copy the hammer configuration from template to the .hammer directory
+- name: "Email | set email configuration"
+  template:
+    src: "email.yaml.j2"
+    dest: "/etc/foreman/email.yaml"
+  notify: "restart katello service"
+  tags: email
+

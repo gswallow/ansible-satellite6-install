@@ -29,13 +29,13 @@ lvm_volumes:
 # network - turn on/off foreman proxies
 satellite_foreman_proxy_dns: "false"
 satellite_foreman_proxy_dhcp: "false"
-satellite_foreman_proxy_puppetrun: "false"
-satellite_foreman_proxy_puppetca: "false"
+satellite_foreman_proxy_puppetrun: "true"
+satellite_foreman_proxy_puppetca: "true"
 satellite_foreman_proxy_realm: "false"
 satellite_foreman_proxy_tftp: "false"
 
 # Satellite - manifest path (copied from S3 through an IAM instance profile)
-satellite_deployment_manifest_path: "/tmp/manifest.zip"
+satellite_deployment_manifest_path: "/tmp/ansible/manifest.zip"
 
 # Satellite - main variables
 satellite_deployment_hostname_short: "satellite"
@@ -62,6 +62,22 @@ satellite_deployment_dhcp_start: "172.16.0.100"
 satellite_deployment_dhcp_end: "172.16.0.240"
 satellite_deployment_dns_zone: "ivytech.edu"
 
+# ssl
+satellite_deployment_ssl_cert_path: "/tmp/ansible/satellite.crt"
+satellite_deployment_ssl_csr_path: "/tmp/ansible/satellite.csr"
+satellite_deployment_ssl_key_path: "/tmp/ansible/satellite.key"
+satellite_deployment_ssl_cacert_path: "/tmp/ansible/satellite-ca.crt"
+
+# email
+satellite_deployment_email_method: ":smtp"
+satellite_deployment_email_smtp_starttls_auto: "true"
+satellite_deployment_email_smtp_address: "smtp.ivytech.edu"
+satellite_deployment_email_smtp_port: "587"
+satellite_deployment_email_smtp_domain: "ivytech.edu"
+satellite_deployment_email_smtp_authentication: ":plain"
+satellite_deployment_email_smtp_username: "satellite"
+satellite_deployment_email_smtp_password: "satellite"
+
 # install
 satellite_deployment_plugin_packages:
   - "foreman-discovery-image"
@@ -77,3 +93,22 @@ satellite_deployment_answers:
   "foreman-proxy-puppetca": "{{ satellite_foreman_proxy_puppetca }}"
   "foreman-proxy-puppetrun": "{{ satellite_foreman_proxy_puppetrun }}"
   "foreman-proxy-tftp": "{{ satellite_foreman_proxy_tftp }}"
+
+# repositories to enable
+satellite_deployment_repositories:
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server (Kickstart)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server (RPMs)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server - RH Common (RPMs)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server - Optional (RPMs)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server - Supplementary (RPMs)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server - Extras (RPMs)', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Satellite Tools {{ satellite_deployment_version }} (for RHEL 7 Server) (RPMs)', architecture: 'x86_64', state: enable}
+  - { product_name: 'Oracle Java for RHEL Server', name_repo: 'Red Hat Enterprise Linux 7 Server - Oracle Java (RPMs)', rel: '7Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server (Kickstart)', rel: '6Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server (RPMs)', rel: '6Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server - RH Common (RPMs)', rel: '6Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server - Optional (RPMs)', rel: '6Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)', rel: '6Server', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 6 Server - Extras (RPMs)', architecture: 'x86_64', state: enable}
+  - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Satellite Tools {{ satellite_deployment_version }} (for RHEL 6 Server) (RPMs)', architecture: 'x86_64', state: enable}
+  - { product_name: 'Oracle Java for RHEL Server', name_repo: 'Red Hat Enterprise Linux 6 Server - Oracle Java (RPMs)', rel: '6Server', architecture: 'x86_64', state: enable}
