@@ -88,11 +88,13 @@ satellite_deployment_answers:
   "foreman-initial-location": "{{ satellite_deployment_location }}"
   "foreman-admin-username": "{{ satellite_deployment_admin_username }}"
   "foreman-admin-password": "{{ satellite_deployment_admin_password }}"
+  "foreman-admin-email": "{{ satellite_deployment_email_smtp_username }}"
   "foreman-proxy-dns": "{{ satellite_foreman_proxy_dns }}"
   "foreman-proxy-dhcp": "{{ satellite_foreman_proxy_dns }}"
   "foreman-proxy-puppetca": "{{ satellite_foreman_proxy_puppetca }}"
   "foreman-proxy-puppetrun": "{{ satellite_foreman_proxy_puppetrun }}"
   "foreman-proxy-tftp": "{{ satellite_foreman_proxy_tftp }}"
+  "foreman-admin-email": "{{ satellite_deployment_email_smtp_username }}"
 
 # repositories to enable
 satellite_deployment_repositories:
