@@ -13,7 +13,7 @@
   tags:
   - "install_satellite"
   - "update_satellite"
-  when: "{{ satellite_deployment_version == 6.1 }}"
+  when: satellite_deployment_version|string == "6.1"
 
 # Check if service exist for foreman
 - name: "Install and configure | check if service exist"
@@ -28,8 +28,7 @@
 #Run the install of Satellite if foreman is installed
 - name: "Install and configure | satellite installation"
   command: "/usr/sbin/katello-installer"
-  when: "{{ foreman_service_file.stat.exists == True and
-    satellite_deployment_version == 6.1 }}"
+  when: foreman_service_file.stat.exists|bool == true and satellite_deployment_version|string == "6.1"
   become: "yes"
   tags:
   - "install_satellite"
@@ -40,7 +39,7 @@
     satellite_deployment_installer_cmd: "{{ satellite_deployment_installer_cmd
       }} --{{ item.key }}='{{ item.value }}'"
   with_dict: "{{ satellite_deployment_answers }}"
-  when: "{{ satellite_deployment_version == 6.2 }}"
+  when: satellite_deployment_version|string == "6.2"
   tags:
   - "install_satellite"
   - "update_satellite"
@@ -49,8 +48,7 @@
 - name: "Satellite 6.2 installation"
   command: "{{ satellite_deployment_installer_cmd }}"
   become: "yes"
-  when: "{{ foreman_service_file.stat.exists == True and
-    satellite_deployment_version == 6.2 }}"
+  when: foreman_service_file.stat.exists|bool == true and satellite_deployment_version|string == "6.2"
   tags:
   - "install_satellite"
   - "update_satellite"
