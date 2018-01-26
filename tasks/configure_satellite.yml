@@ -32,7 +32,7 @@
   become: "yes"
   shell: "hammer subscription upload --file
     {{ satellite_deployment_manifest_dest_path }} --organization
-    {{ satellite_deployment_organization }}"
+    '{{ satellite_deployment_organization }}'"
 
 #Enabling repos on satellite
 - name: "Configure | enable repos"
@@ -50,12 +50,12 @@
 #Get the repos ids and sync the repos
 - name: "Configure | grab repositories uuid"
   shell: "hammer repository list --organization
-    {{ satellite_deployment_organization }} | grep yum | awk '{print $1}'"
+    '{{ satellite_deployment_organization }}' | grep yum | awk '{print $1}'"
   register: "repos"
 
 - name: "Configure | sync repos on satellite"
   shell: "hammer repository synchronize --id '{{ item }}' --organization
-    {{ satellite_deployment_organization }}"
+    '{{ satellite_deployment_organization }}'"
   with_items: "{{ repos.stdout_lines }}"
   register: "sync_repos_result"
   retries: 3
