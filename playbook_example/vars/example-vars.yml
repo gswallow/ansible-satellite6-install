@@ -74,8 +74,8 @@ satellite_deployment_email_smtp_starttls_auto: "true"
 satellite_deployment_email_smtp_address: "smtp.ivytech.edu"
 satellite_deployment_email_smtp_port: "587"
 satellite_deployment_email_smtp_domain: "ivytech.edu"
-satellite_deployment_email_smtp_authentication: ":plain"
-satellite_deployment_email_smtp_username: "satellite"
+satellite_deployment_email_smtp_authentication: ":login"
+satellite_deployment_email_smtp_username: "satellite@ivytech.edu"
 satellite_deployment_email_smtp_password: "satellite"
 
 # install
