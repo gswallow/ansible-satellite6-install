@@ -41,7 +41,7 @@ satellite_deployment_manifest_path: "/tmp/ansible/manifest.zip"
 satellite_deployment_hostname_short: "satellite"
 satellite_deployment_hostname_full: "satellite.ivytech.edu"
 satellite_deployment_admin_username: "admin"
-satellite_deployment_admin_password: "123456" # Randomize
+satellite_deployment_admin_password: "{{ lookup('satellite_admin_password', '/dev/null length=15 chars=ascii_letters') }}"
 satellite_deployment_organization: "Ivy Tech Community College"
 satellite_deployment_location: "Indianapolis"
 satellite_deployment_version: 6.2
@@ -70,6 +70,7 @@ satellite_deployment_ssl_cacert_path: "/tmp/ansible/satellite-ca.crt"
 
 # email
 satellite_deployment_email_method: ":smtp"
+satellite_deployment_email_address: "satellite@ivytech.edu"
 satellite_deployment_email_smtp_starttls_auto: "true"
 satellite_deployment_email_smtp_address: "smtp.ivytech.edu"
 satellite_deployment_email_smtp_port: "587"
@@ -77,6 +78,7 @@ satellite_deployment_email_smtp_domain: "ivytech.edu"
 satellite_deployment_email_smtp_authentication: ":login"
 satellite_deployment_email_smtp_username: "satellite@ivytech.edu"
 satellite_deployment_email_smtp_password: "satellite"
+satellite_deployment_administrator_email: "satellite@ivytech.edu"
 
 # install
 satellite_deployment_plugin_packages:
@@ -88,7 +90,6 @@ satellite_deployment_answers:
   "foreman-initial-location": "{{ satellite_deployment_location }}"
   "foreman-admin-username": "{{ satellite_deployment_admin_username }}"
   "foreman-admin-password": "{{ satellite_deployment_admin_password }}"
-  "foreman-admin-email": "{{ satellite_deployment_email_smtp_username }}"
   "foreman-proxy-dns": "{{ satellite_foreman_proxy_dns }}"
   "foreman-proxy-dhcp": "{{ satellite_foreman_proxy_dns }}"
   "foreman-proxy-puppetca": "{{ satellite_foreman_proxy_puppetca }}"
