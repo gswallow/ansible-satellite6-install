@@ -41,7 +41,7 @@ satellite_deployment_manifest_path: "/tmp/ansible/manifest.zip"
 satellite_deployment_hostname_short: "satellite"
 satellite_deployment_hostname_full: "satellite.ivytech.edu"
 satellite_deployment_admin_username: "admin"
-satellite_deployment_admin_password: "{{ lookup('satellite_admin_password', '/dev/null length=15 chars=ascii_letters') }}"
+satellite_deployment_admin_password: "{{ lookup('password', '/root/.satellite_password length=15 chars=ascii_letters') }}"
 satellite_deployment_organization: "Ivy Tech Community College"
 satellite_deployment_location: "Indianapolis"
 satellite_deployment_version: 6.2
