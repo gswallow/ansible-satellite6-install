@@ -2,7 +2,7 @@
 #Create Hammer directory on /root
 - name: "Configure satellite | create .hammer directory on user"
   file:
-    path: "~/.hammer"
+    path: "/root/.hammer"
     state: "directory"
     mode: "0755"
 
@@ -10,7 +10,7 @@
 - name: "Configure satellite | set configuration for hammer from template"
   template:
     src: "hammer_config.yml.j2"
-    dest: "~/.hammer/cli_config.yml"
+    dest: "/root/.hammer/cli_config.yml"
 
 #Copy the manifest
 - name: "Configure satellite | copy manifest"
@@ -30,14 +30,14 @@
 #Upload the manifest to the satellite
 - name: "Configure satellite | upload the manifest"
   become: "yes"
-  shell: "hammer subscription upload --file
+  shell: "HOME=/root hammer subscription upload --file
     {{ satellite_deployment_manifest_dest_path }} --organization
     '{{ satellite_deployment_organization }}'"
 
 #Enabling repos on satellite
 - name: "Configure satellite | enable repos"
   become: "yes"
-  shell: "hammer repository-set '{{ item.state }}' --organization
+  shell: "HOME=/root hammer repository-set '{{ item.state }}' --organization
     '{{ satellite_deployment_organization }}'
     --product '{{ item.product_name }}' --name '{{ item.name_repo }}'
     {% if item.rel is defined %} --releasever '{{ item.rel }}' {% endif %}
@@ -49,12 +49,12 @@
 
 #Get the repos ids and sync the repos
 - name: "Configure satellite | grab repositories uuid"
-  shell: "hammer repository list --organization
+  shell: "HOME=/root hammer repository list --organization
     '{{ satellite_deployment_organization }}' | grep yum | awk '{print $1}'"
   register: "repos"
 
 - name: "Configure satellite | sync repos on satellite"
-  shell: "hammer repository synchronize --id '{{ item }}' --organization
+  shell: "HOME=/root hammer repository synchronize --id '{{ item }}' --organization
     '{{ satellite_deployment_organization }}'"
   with_items: "{{ repos.stdout_lines }}"
   register: "sync_repos_result"
