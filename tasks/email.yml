@@ -11,3 +11,9 @@
     --name email_reply_address
     --value {{ satellite_deployment_email_address }}"
   tags: email
+
+- name: "Email | set admin email address"
+  shell: "HOME=/root hammer settings set
+    --name administrator
+    --value {{ satellite_deployment_administrator_email }}"
+  tags: email
