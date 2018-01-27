@@ -8,6 +8,6 @@
 
 - name "Email | set email reply address"
   shell: "HOME=/root hammer settings set 
-          --name email_reply_address
-          --value {{ satellite_deployment_email_address }}"
+    --name email_reply_address
+    --value {{ satellite_deployment_email_address }}"
   tags: email
