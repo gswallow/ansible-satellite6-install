@@ -2,21 +2,21 @@
 #Add location to the organization
 - name: "Configure content | add location to organization"
   shell: "HOME=/root hammer location add-organization
-    --name {{ satellite_deployment_location  }}
-    --organization {{ satellite_deployment_organization }}"
+    --name '{{ satellite_deployment_location  }}'
+    --organization '{{ satellite_deployment_organization }}'"
 
 - name: "Configure content | add default hostgroup"
   shell: "HOME=/root hammer hostgroup create
     --name default
     --content-view-id 1
-    --organization {{ satellite_deployment_organization }}
-    --locations {{ satellite_deployment_location }}
+    --organization '{{ satellite_deployment_organization }}'
+    --locations '{{ satellite_deployment_location }}'
     --environment-id 1 "
 
 - name: "Configure content | add default activation key"
   shell: "HOME=/root hammer activation-key create
     --unlimited-hosts
-    --organization {{ satellite_deployment_organization }}
+    --organization '{{ satellite_deployment_organization }}'
     --lifecycle-environment-id 1
     --content-view-id 1
     --name auto_register"
