@@ -30,4 +30,7 @@
     --prior 'Library'
     --organization '{{ satellite_deployment_organization }}'"
   with_items: "{{ satellite_deployment_lifecycle_environments }}"
+  with_items: "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
+  tags:
+    - blah
