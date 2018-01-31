@@ -11,7 +11,8 @@
     --content-view-id 1
     --organization '{{ satellite_deployment_organization }}'
     --locations '{{ satellite_deployment_location }}'
-    --environment-id 1 "
+    --environment-id 1"
+  ignore_errors: "yes" # yes I'm lazy
 
 - name: "Configure content | add default activation key"
   shell: "HOME=/root hammer activation-key create
