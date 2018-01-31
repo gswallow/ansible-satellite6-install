@@ -21,3 +21,4 @@
     --lifecycle-environment-id 1
     --content-view-id 1
     --name auto_register"
+  ignore_errors: "yes"
