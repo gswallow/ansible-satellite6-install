@@ -7,5 +7,6 @@
 - include: install_satellite.yml
 - include: configure_satellite.yml
 - include: configure_capsule.yml
+- include: configure_content.yml
 - include: ssl.yml
 - include: email.yml

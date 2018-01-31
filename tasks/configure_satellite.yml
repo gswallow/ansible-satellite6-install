@@ -61,15 +61,6 @@
   retries: 3
   until: sync_repos_result|success
 
-# Change default settings
-- name: "Configure satellite | set foreman_url"
-  shell: "HOME=/root hammer settings set
-    --name foreman_url --value https://{{ satellite_deployment_hostname_full }}"
-
-- name: "Configure satellite | set unattended_url"
-  shell: "HOME=/root hammer settings set
-    --name unattended_url --value https://{{ satellite_deployment_hostname_full }}"
-
 # Create a sync plan
 - name: "Configure satellite | list daily sync plan"
   shell: "HOME=/root hammer sync-plan list 
@@ -82,3 +73,12 @@
     --organization-id 1 --enabled true --interval daily 
     --description \"Sync err'day.\" --name 'Daily Sync' --sync-date `date '+%Y-%m-%d'`"
   when: sync_plan_result.stdout == ""
+
+# Change default settings
+- name: "Configure satellite | set foreman_url"
+  shell: "HOME=/root hammer settings set
+    --name foreman_url --value https://{{ satellite_deployment_hostname_full }}"
+
+- name: "Configure satellite | set unattended_url"
+  shell: "HOME=/root hammer settings set
+    --name unattended_url --value https://{{ satellite_deployment_hostname_full }}"
