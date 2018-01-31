@@ -72,9 +72,18 @@
 
 - name: "Configure satellite | create daily sync plan"
   shell: "HOME=/root hammer sync-plan create 
-    --organization-id 1 --enabled true --interval daily 
-    --description \"Sync err'day.\" --name 'Daily Sync' --sync-date `date '+%Y-%m-%d'`"
+    --organization '{{ satellite_deployment_organization }}'
+    --enabled true --interval daily
+    --description \"Sync err'day.\"
+    --name 'Daily Sync'
+    --sync-date `date '+%Y-%m-%d'`"
   when: sync_plan_result.stdout == ""
+
+- name: "Configure satellite | apply daily sync plan"
+  shell: "HOME=/root hammer product set-sync-plan
+    --name '{{ item.product_name }}'
+    --sync-plan 'Daily Sync' --organization '{{ satellite_deployment_organization }}'"
+  with_items: "{{ satellite_deployment_repositories }}"
 
 # Change default settings
 - name: "Configure satellite | set foreman_url"
