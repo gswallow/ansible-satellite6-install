@@ -22,3 +22,12 @@
     --content-view-id 1
     --name auto_register"
   ignore_errors: "yes"
+
+- name: "Configure content | add application lifecycle environment"
+  shell: "HOME=/root hammer lifecycle-environment create
+    --name '{{ item }}'
+    --description '{{ satellite_deployment_organization }} {{ item }} environment'
+    --prior 'Library'
+    --organization '{{ satellite_deployment_organization }}'"
+  with_items: "{{ satellite_deployment_lifecycle_environments }}"
+  ignore_errors: "yes"
