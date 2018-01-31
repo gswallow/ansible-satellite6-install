@@ -69,3 +69,16 @@
 - name: "Configure satellite | set unattended_url"
   shell: "HOME=/root hammer settings set
     --name unattended_url --value https://{{ satellite_deployment_hostname_full }}"
+
+# Create a sync plan
+- name: "Configure satellite | list daily sync plan"
+  shell: "HOME=/root hammer sync-plan list 
+    --organization-id 1 --name 'Daily Sync' | grep 'Daily Sync'"
+  register: "sync_plan_result"
+  ignore_errors: "yes"
+
+- name: "Configure satellite | create daily sync plan"
+  shell: "HOME=/root hammer sync-plan create 
+    --organization-id 1 --enabled true --interval daily 
+    --description \"Sync err'day.\" --name 'Daily Sync' --sync-date `date '+%Y-%m-%d'`"
+  when: sync_plan_result.stdout == ""
