@@ -45,7 +45,7 @@
   with_items: "{{ satellite_deployment_repositories }}"
   ignore_errors: "yes"
   tags:
-    - "satellite_deployment_repositories"
+    - enable_repos
 
 #Get the repos ids and sync the repos
 - name: "Configure satellite | grab repositories uuid"
@@ -60,7 +60,8 @@
   register: "sync_repos_result"
   retries: 3
   until: sync_repos_result|success
-  tags: sync
+  tags: 
+    - sync
 
 # Create a sync plan
 - name: "Configure satellite | list daily sync plan"
