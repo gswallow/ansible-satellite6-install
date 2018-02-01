@@ -31,5 +31,16 @@
     --organization '{{ satellite_deployment_organization }}'"
   with_items: "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
-  tags:
-    - "debug"
+
+- name: "Configure content | create default content view"
+  shell: "HOME=/root hammer content-view create
+    --name default
+    --description 'Default, unfiltered view of all content'
+    --organization '{{ satellite_deployment_organization }}'"
+  ignore_errors: yes
+
+- include_tasks: _configure_content_repos_for_products.yml
+  with_items:
+    - "{{ satellite_deployment_repositories|map(attribute='product_name')|unique|list }}"
+  loop_control:
+    loop_var: product
