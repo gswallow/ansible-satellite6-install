@@ -95,10 +95,8 @@
     - "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
 
-- include_tasks: _configure_loop2.yml
+- include_tasks: _content_loop2.yml
   with_items:
     - "{{ satellite_deployment_lifecycle_environments }}"
   loop_control:
     loop_var: env
-  tags:
-    - "debug"
