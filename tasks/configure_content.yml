@@ -79,7 +79,7 @@
 - name: "Configure content | add activation keys"
   shell: "HOME=/root hammer activation-key create
     --name {{ item.name }}-autoreg
-    --unlimited-content-hosts true
+    --unlimited-hosts true
     --description '{{ satellite_deployment_organization }} Stack in the {{ item.name }} Environment'
     --lifecycle-environment {{ item.name }}
     --content-view default
