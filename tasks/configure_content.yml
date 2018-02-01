@@ -30,7 +30,7 @@
     --organization '{{ satellite_deployment_organization }}'"
   ignore_errors: yes
 
-- include_tasks: _configure_content_repos_for_products.yml
+- include_tasks: _content_loop1.yml
   with_items:
     - "{{ satellite_deployment_repositories|map(attribute='product_name')|unique|list }}"
   loop_control:
@@ -73,8 +73,6 @@
     --organization '{{ satellite_deployment_organization }}'
     | awk '/^[0-9]/ {print $1}'"
   register: subscription_id
-  tags:
-    - "debug"
 
 - name: "Configure content | add activation keys"
   shell: "HOME=/root hammer activation-key create
@@ -87,8 +85,6 @@
   with_items:
     - "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
-  tags:
-    - "debug"
 
 - name: "Configure content | attach the stupid subscription"
   shell: "HOME=/root hammer activation-key add-subscription
@@ -98,5 +94,11 @@
   with_items:
     - "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
+
+- include_tasks: _configure_loop2.yml
+  with_items:
+    - "{{ satellite_deployment_lifecycle_environments }}"
+  loop_control:
+    loop_var: env
   tags:
     - "debug"

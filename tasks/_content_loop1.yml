@@ -1,5 +1,5 @@
 ---
-- name: "Configure content | get repository ids"
+- name: "Configure content loop 1 | get repository ids"
   shell: "HOME=/root hammer repository list
     --content-type yum
     --organization '{{ satellite_deployment_organization }}'
@@ -7,7 +7,7 @@
     | awk '/^[0-9]/ {print $1}'"
   register: repository_ids
 
-- name: "Configure content | add all products to content view"
+- name: "Configure content loop 1 | add all products to content view"
   shell: "HOME=/root hammer content-view add-repository
     --name default
     --organization '{{ satellite_deployment_organization }}'
