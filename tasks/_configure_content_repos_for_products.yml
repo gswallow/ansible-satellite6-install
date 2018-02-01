@@ -6,8 +6,6 @@
     --product '{{ product }}'
     | awk '/^[0-9]/ {print $1}'"
   register: repository_ids
-  tags:
-    - "debug"
 
 - name: "Configure content | add all products to content view"
   shell: "HOME=/root hammer content-view add-repository
@@ -16,5 +14,3 @@
     --product '{{ product }}'
     --repository-id {{ item }}"
   with_items: "{{ repository_ids.stdout_lines }}"
-  tags:
-    - "debug"
