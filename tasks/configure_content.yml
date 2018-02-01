@@ -67,6 +67,15 @@
   tags:
     - "publish_content"
 
+# I honestly don't know why this has to be so difficult.
+- name: "Configure content | get subscription id"
+  shell: "HOME=/root hammer subscription list
+    --organization '{{ satellite_deployment_organization }}'
+    | awk '/^[0-9]/ {print $3}'"
+  register: subscription_id
+  tags:
+    - "debug"
+
 - name: "Configure content | add activation keys"
   shell: "HOME=/root hammer activation-key create
     --name {{ item.name }}-autoreg
@@ -74,6 +83,17 @@
     --description '{{ satellite_deployment_organization }} Stack in the {{ item.name }} Environment'
     --lifecycle-environment {{ item.name }}
     --content-view default
+    --organization '{{ satellite_deployment_organization }}'"
+  with_items:
+    - "{{ satellite_deployment_lifecycle_environments }}"
+  ignore_errors: "yes"
+  tags:
+    - "debug"
+
+- name: "Configure content | attach the stupid subscription"
+  shell: "HOME=/root hammer activation-key add-subscription
+    --name {{ item.name }}-autoreg
+    --subscription-id {{ subscription_id.stdout }}
     --organization '{{ satellite_deployment_organization }}'"
   with_items:
     - "{{ satellite_deployment_lifecycle_environments }}"
