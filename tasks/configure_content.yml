@@ -68,10 +68,10 @@
     - "publish_content"
 
 # I honestly don't know why this has to be so difficult.
-- name: "Configure content | get subscription id"
+- name: "Configure content | get subscription ids"
   shell: "HOME=/root hammer subscription list
     --organization '{{ satellite_deployment_organization }}'
-    | awk '/^[0-9]/ {print $3}'"
+    | awk '/^[0-9]/ {print $1}'"
   register: subscription_id
   tags:
     - "debug"
