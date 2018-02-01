@@ -25,12 +25,11 @@
 
 - name: "Configure content | add application lifecycle environment"
   shell: "HOME=/root hammer lifecycle-environment create
-    --name '{{ item }}'
-    --description '{{ satellite_deployment_organization }} {{ item }} environment'
-    --prior 'Library'
+    --name '{{ item.name }}'
+    --description '{{ satellite_deployment_organization }} {{ item.name }} environment'
+    --prior '{{ item.prior }}'
     --organization '{{ satellite_deployment_organization }}'"
-  with_items: "{{ satellite_deployment_lifecycle_environments }}"
   with_items: "{{ satellite_deployment_lifecycle_environments }}"
   ignore_errors: "yes"
   tags:
-    - blah
+    - "debug"
