@@ -4,7 +4,7 @@ require 'time'
 require 'rest-client'
 require 'json'
 
-ME = 'satellite.ivytech.edu'
+ME = '{{ satellite_deployment_hostname_full }}"
 URL = "https://#{ME}"
 ORG_NAME = '{{ satellite_deployment_organization }}'
 CV_NAME = 'default'
@@ -63,7 +63,6 @@ def poll_task(id)
     sleep 5
     poll_result = get_json("#{TASKS_URL}/tasks/#{id}")
   end
-  puts "id: #{id} state: #{poll_result['state']} result: #{poll_result['resultl']}"
   poll_result['result']
 end
 
@@ -103,7 +102,7 @@ if res == "success"
     print "Promoting version #{version_id} of #{CV_NAME} to #{e['name']}..."
     promote_task = post_json("#{KATELLO_URL}/content_view_versions/#{version_id}/promote", {'environment_id' => e['id']})
     res = poll_task promote_task['id']
-    print res
+    puts res
     sleep 60
   end
 end
@@ -113,7 +112,5 @@ content_view_versions[0..-3].each do |v|
   print "Deleting version v['version']..."
   delete_task = delete_json("#{KATELLO_URL}/content_view_versions/#{v['id']}"
   res = poll_task delete_task['id']
-  print res
+  puts res
 end
-
-
