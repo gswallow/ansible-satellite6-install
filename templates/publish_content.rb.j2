@@ -110,7 +110,7 @@ end
 
 # Cleanup everything except for the last three versions
 content_view_versions[0..-3].each do |v|
-  print "Deleting version v['version']..."
+  print "Deleting version #{v['version']}..."
   delete_task = delete_json("#{KATELLO_URL}/content_view_versions/#{v['id']}")
   res = poll_task delete_task['id']
   puts res
