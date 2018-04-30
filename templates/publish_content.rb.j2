@@ -94,10 +94,11 @@ publish_task = post_json("#{KATELLO_URL}/content_views/#{my_content_view['id']}/
 res = poll_task publish_task['id']
 puts res
 
-# Publish the new version of the content view to each lifecycle environment, in order
+# Publish the new version of the content view to each lifecycle environment, in order, except to Library
 if res == "success"
   content_view_versions = get_json("#{KATELLO_URL}/content_views/#{my_content_view['id']}/")['versions'].sort { |v1, v2| v1['version'] <=> v2['version'] }
   version_id = content_view_versions.last['id']
+  order.reject! { |e| e['name'] == 'Library' }
   order.each do |e|
     print "Promoting version #{version_id} of #{CV_NAME} to #{e['name']}..."
     promote_task = post_json("#{KATELLO_URL}/content_view_versions/#{version_id}/promote", {'environment_id' => e['id']})
