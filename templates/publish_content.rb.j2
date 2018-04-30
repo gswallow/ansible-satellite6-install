@@ -75,7 +75,7 @@ content_views = get_json("#{KATELLO_URL}/content_views")['results']
 my_content_view = content_views.map { |v| v if v['name'] == CV_NAME }.first
 
 # Get lifecycle environments, in order of inheritence
-paths = get_json("#{KATELLO_URL}/organizations/#{my_org_id}/environments/paths")['results']['environments'].first
+paths = get_json("#{KATELLO_URL}/organizations/#{my_org_id}/environments/paths")['results'].first
 lifecycle_envs = paths['environments']
 order = []
 lifecycle_envs.each do |e|
@@ -110,7 +110,7 @@ end
 # Cleanup everything except for the last three versions
 content_view_versions[0..-3].each do |v|
   print "Deleting version v['version']..."
-  delete_task = delete_json("#{KATELLO_URL}/content_view_versions/#{v['id']}"
+  delete_task = delete_json("#{KATELLO_URL}/content_view_versions/#{v['id']}")
   res = poll_task delete_task['id']
   puts res
 end
