@@ -97,7 +97,7 @@
 - name: "Configure satellite | Create /usr/local/bin/publish_content.rb"
   template:
     src: "publish_content.rb.j2"
-    dest: "/usr/lcoal/bin/publish_content.rb.j2"
+    dest: "/usr/local/bin/publish_content.rb.j2"
     mode: 0755
     owner: root
     group: root
