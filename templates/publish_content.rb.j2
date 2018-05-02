@@ -66,52 +66,81 @@ def poll_task(id)
   poll_result['result']
 end
 
-# ----------v do the things v-------- # 
-
-organizations = get_json("#{FOREMAN_URL}/organizations")['results']
-my_org_id = organizations.map { |o| o['id'] if o['name'] == ORG_NAME }.first
-
-content_views = get_json("#{KATELLO_URL}/content_views")['results']
-my_content_view = content_views.map { |v| v if v['name'] == CV_NAME }.first
-
-# Get lifecycle environments, in order of inheritence
-paths = get_json("#{KATELLO_URL}/organizations/#{my_org_id}/environments/paths")['results'].first
-lifecycle_envs = paths['environments']
-order = []
-lifecycle_envs.each do |e|
-  if e['prior'].nil?
-    order.unshift({'name' => e['name'], 'id' => e['id']})
-  elsif order.include?(e['prior']['name'])
-    order.insert(order.index(e['prior']['name']) + 1, {'name' => e['name'], 'id' => e['id']})
-  else
-    order.push({'name' => e['name'], 'id' => e['id']})
-  end
+def run_task(path, params = {})
+  res = poll_task post_json(path, params)['id']
+  sleep 30
+  res
 end
+
+def delete_task(path, params = {})
+  res = poll_task delete_json(path, params)['id']
+  sleep 30
+  res
+end
+
+def order_of(lifecycle_envs = [])
+  order = Array.new
+  lifecycle_envs.each do |e|
+    if e['prior'].nil?
+      order.unshift({'name' => e['name'], 'id' => e['id']})
+    elsif order.include?(e['prior']['name'])
+      order.insert(order.index(e['prior']['name']) + 1, {'name' => e['name'], 'id' => e['id']})
+    else
+      order.push({'name' => e['name'], 'id' => e['id']})
+    end
+  end
+  order.reject! { |e| e['name'] == 'Library' }
+end
+
+def organizations
+  get_json("#{FOREMAN_URL}/organizations")['results']
+end
+
+def my_org_id
+  organizations.map { |o| o['id'] if o['name'] == ORG_NAME }.first
+end
+
+def content_views
+  get_json("#{KATELLO_URL}/content_views")['results'] 
+end
+
+def my_content_view_id
+  content_views.map { |v| v if v['name'] == CV_NAME }.first['id']
+end
+
+def content_view_versions
+  versions = get_json("#{KATELLO_URL}/content_views/#{my_content_view_id}/")['versions']
+  versions.sort { |v1, v2| v1['version'] <=> v2['version'] }
+end
+
+def latest_version_id
+  content_view_versions.last['id']
+end
+
+def paths
+  get_json("#{KATELLO_URL}/organizations/#{my_org_id}/environments/paths")['results'].first
+end
+
+def lifecycle_environments
+  paths['environments']
+end
+  
+# ----------v do the things v-------- # 
 
 # Publish a new version of the content view
 print "Publishing new version of the #{CV_NAME} content view..."
-publish_task = post_json("#{KATELLO_URL}/content_views/#{my_content_view['id']}/publish")
-res = poll_task publish_task['id']
-puts res
+puts run_task("#{KATELLO_URL}/content_views/#{my_content_view_id}/publish")
 
 # Publish the new version of the content view to each lifecycle environment, in order, except to Library
 if res == "success"
-  content_view_versions = get_json("#{KATELLO_URL}/content_views/#{my_content_view['id']}/")['versions'].sort { |v1, v2| v1['version'] <=> v2['version'] }
-  version_id = content_view_versions.last['id']
-  order.reject! { |e| e['name'] == 'Library' }
-  order.each do |e|
-    print "Promoting version #{version_id} of #{CV_NAME} to #{e['name']}..."
-    promote_task = post_json("#{KATELLO_URL}/content_view_versions/#{version_id}/promote", {'environment_id' => e['id']})
-    res = poll_task promote_task['id']
-    puts res
-    sleep 60
+  order_of(lifecycle_envs).each do |e|
+    print "Promoting version #{latest_version_id} of #{CV_NAME} to #{e['name']}..."
+    puts run_task("#{KATELLO_URL}/content_view_versions/#{latest_version_id}/promote", {'environment_id' => e['id']})
   end
 end
 
 # Cleanup everything except for the last three versions
 content_view_versions[0..-3].each do |v|
   print "Deleting version #{v['version']}..."
-  delete_task = delete_json("#{KATELLO_URL}/content_view_versions/#{v['id']}")
-  res = poll_task delete_task['id']
-  puts res
+  puts delete_task("#{KATELLO_URL}/content_view_versions/#{v['id']}")
 end
