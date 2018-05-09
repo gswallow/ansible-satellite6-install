@@ -1,0 +1,20 @@
+---
+#Copy the cert
+- name: "SSL | copy CA cert from remote"
+  become: "yes"
+  get_url:
+    url: "{{ satellite_ldap_ca_cert_url }}"
+    dest: "{{ satellite_ldap_ca_cert_path }}"
+  when: satellite_ldap_remote_ca_cert
+  tags:
+    - "ldap"
+
+- name: "LDAP | copy CA cert"
+  become: "yes"
+  copy:
+    src: "{{ satellite_ldap_ca_cert_path }}"
+    dest: "{{ satellite_ldap_ca_cert_dest_path }}"
+  when: not satellite_ldap_remote_ca_cert
+  tags:
+    - "ldap"
+

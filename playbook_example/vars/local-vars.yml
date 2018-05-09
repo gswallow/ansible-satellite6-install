@@ -104,6 +104,12 @@ satellite_deployment_answers:
   "foreman-proxy-puppetrun": "{{ satellite_foreman_proxy_puppetrun }}"
   "foreman-proxy-tftp": "{{ satellite_foreman_proxy_tftp }}"
 
+# LDAP support
+satellite_ldap_ca_cert_path: "/tmp/ansible/ldap-ca.crt"
+satellite_ldap_ca_cert_dest_path: "/etc/pki/tls/certs/ldap-ca.crt"
+# satellite_ldap_remote_ca_cert: true
+# satellite_ldap_ca_cert_url: "https://my.server.com/ldap-ca.crt"
+
 # repositories to enable
 satellite_deployment_repositories:
   - { product_name: 'Red Hat Enterprise Linux Server', name_repo: 'Red Hat Enterprise Linux 7 Server (Kickstart)', rel: '7Server', architecture: 'x86_64', state: enable}
