@@ -130,17 +130,25 @@ end
 
 def can_promote_to?(env, publish_timestamp, days = 0)
   if is_not_promoted_to?(env['id'])
-    return true if is_delayed?(env['name']) && is_old_enough?(publish_timestamp, days) 
-    !is_delayed?(env['name'])
+    if is_delayed?(env['name']) && is_old_enough?(publish_timestamp, days)
+      return true
+    elsif !is_delayed?(env['name'])
+      return true
+    else
+      puts "#{env["name"]} enforces a delay and content view #{latest_version_label} is not old enough. Skipping."
+    end
+  else
+    puts "#{env["name"]} already has content view #{latest_version_label}"
   end
+  false
 end
 
 def is_old_enough?(publish_timestamp, days)
   Time.now - (Time.parse publish_timestamp) > days * 86400 - 3600
 end
   
-def is_delayed?(env)
-  DELAYED_ENVS.include?(env)
+def is_delayed?(label)
+  DELAYED_ENVS.include?(label)
 end
 
 def is_not_promoted_to?(id)
@@ -148,16 +156,6 @@ def is_not_promoted_to?(id)
 end
 
 # ----------v do the things v-------- # 
-
-# Promote the latest version of the content view to each lifecycle environment, in order, except to Library
-#order_of(lifecycle_environments).each do |env|
-#  if can_promote_to?(env['name'], latest_version_published, DELAY)
-#    print "Promoting version #{latest_version_label} of #{CV_NAME} to #{env['name']}..."
-#    run_task("#{KATELLO_URL}/content_view_versions/#{latest_version_id}/promote", {'environment_id' => env['id']})
-#  else
-#    puts "Not promoting version #{latest_version_label} of #{CV_NAME} to #{env['name']} because it is delayed."
-#  end
-#end
 
 # Publish a new version of the content view if it's older than REFRESH days
 if is_old_enough?(latest_version_published, REFRESH)
@@ -169,12 +167,9 @@ end
 
 # Promote the newest version of the content view to test environments, which are not delayed
 order_of(lifecycle_environments).each do |env|
-  if can_promote_to?(env['name'], latest_version_published, DELAY)
+  if can_promote_to?(env, latest_version_published, DELAY)
     print "Promoting version #{latest_version_label} of #{CV_NAME} to #{env['name']}..."
-    #run_task("#{KATELLO_URL}/content_view_versions/#{latest_version_id}/promote", {'environment_id' => env['id']})
-    puts 
-  else
-    puts "#{env['name']} is already at #{latest_version_label} of #{CV_NAME}.  Skipping."
+    run_task("#{KATELLO_URL}/content_view_versions/#{latest_version_id}/promote", {'environment_id' => env['id']})
   end
 end
 
