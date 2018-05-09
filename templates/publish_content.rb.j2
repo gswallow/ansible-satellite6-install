@@ -1,0 +1,181 @@
+#!/usr/bin/ruby
+# vi: set filetype=ruby :
+
+require 'time'
+require 'rest-client'
+require 'json'
+
+HOST         = '{{ satellite_deployment_hostname_full }}'
+ORG_NAME     = '{{ satellite_deployment_organization }}'
+DELAYED_ENVS = [ "training", "prod", "fye" ]  # Delayed environments
+DELAY        = 14                             # Days to delay promoting to delayed environments
+REFRESH      = 28                             # Days between creating new content view versions
+KEEP         = 3                              # Number of content view versions to keep
+
+URL          = "https://#{HOST}"
+CV_NAME      = 'default'
+FOREMAN_URL  = "#{URL}/api/v2"
+TASKS_URL    = "#{URL}/foreman_tasks/api"
+KATELLO_URL  = "#{URL}/katello/api/v2"
+USERNAME     = 'admin'
+PASSWORD     = File.read('/root/.satellite_password').chomp
+
+def make_request(location, method = :get, json_data = {})
+  tries = 10
+  begin
+    response = RestClient::Request.new(
+      :method => method.to_sym,
+      :url => location,
+      :user => USERNAME,
+      :password => PASSWORD,
+      :headers => { :accept =>  :json, :content_type => :json },
+      :payload => JSON.generate(json_data)
+    ).execute
+  rescue RestClient::BadRequest => e
+    tries -= 1
+    if tries > 0
+      print "retrying..."
+      sleep 3
+      retry
+    else
+      response = "failed: #{e}"
+    end
+  end
+  JSON.parse(response.to_str)
+end
+
+def poll_task(id)
+  poll_result = make_request("#{TASKS_URL}/tasks/#{id}", :get)
+  while poll_result['state'] != "stopped" do
+    sleep 2
+    print "."
+    poll_result = make_request("#{TASKS_URL}/tasks/#{id}", :get)
+  end
+  poll_result['result']
+end
+
+def run_task(path, params = {})
+  res = poll_task make_request(path, :post, params)['id']
+  sleep 30
+  puts res
+end
+
+def delete_task(path, params = {})
+  res = poll_task make_request(path, :delete, params)['id']
+  sleep 30
+  puts res
+end
+
+def order_of(lifecycle_envs = [])
+  order = Array.new
+  lifecycle_envs.each do |env|
+    if env['prior'].nil?
+      order.unshift({'name' => env['name'], 'id' => env['id']})
+    elsif order.include?(env['prior']['name'])
+      order.insert(order.index(env['prior']['name']) + 1, {'name' => env['name'], 'id' => env['id']})
+    else
+      order.push({'name' => env['name'], 'id' => env['id']})
+    end
+  end
+  order.reject! { |env| env['name'] == 'Library' }
+end
+
+def organizations
+  make_request("#{FOREMAN_URL}/organizations", :get)['results']
+end
+
+def my_org_id
+  organizations.map { |o| o['id'] if o['name'] == ORG_NAME }.first
+end
+
+def content_views
+  make_request("#{KATELLO_URL}/content_views", :get)['results'] 
+end
+
+def my_content_view_id
+  content_views.map { |v| v if v['name'] == CV_NAME }.first['id']
+end
+
+def content_view_versions
+  make_request("#{KATELLO_URL}/content_views/#{my_content_view_id}/", :get)['versions']
+end
+
+def latest_version
+  content_view_versions.sort { |v1, v2| v1['version'].to_f <=> v2['version'].to_f }.last
+end
+  
+def latest_version_id
+  latest_version['id']
+end
+
+def latest_version_label
+  latest_version['version']
+end
+
+def latest_version_published
+  latest_version['published']
+end
+
+def latest_version_environment_ids
+  latest_version['environment_ids']
+end
+
+def paths
+  make_request("#{KATELLO_URL}/organizations/#{my_org_id}/environments/paths", :get)['results'].first
+end
+
+def lifecycle_environments
+  paths['environments']
+end
+
+def can_promote_to?(env, publish_timestamp, days = 0)
+  if is_not_promoted_to?(env['id'])
+    if is_delayed?(env['name']) && is_old_enough?(publish_timestamp, days)
+      return true
+    elsif !is_delayed?(env['name'])
+      return true
+    else
+      puts "#{env["name"]} enforces a delay and content view #{latest_version_label} is not old enough. Skipping."
+    end
+  else
+    puts "#{env["name"]} already has content view #{latest_version_label}"
+  end
+  false
+end
+
+def is_old_enough?(publish_timestamp, days)
+  Time.now - (Time.parse publish_timestamp) > days * 86400 - 3600
+end
+  
+def is_delayed?(label)
+  DELAYED_ENVS.include?(label)
+end
+
+def is_not_promoted_to?(id)
+  !latest_version_environment_ids.include?(id)
+end
+
+# ----------v do the things v-------- # 
+
+# Publish a new version of the content view if it's older than REFRESH days
+if is_old_enough?(latest_version_published, REFRESH)
+  print "Publishing new version of the #{CV_NAME} content view..."
+  run_task("#{KATELLO_URL}/content_views/#{my_content_view_id}/publish")
+else
+  puts "Not publishing #{CV_NAME} content view because the latest is less than 28 days old"
+end
+
+# Promote the newest version of the content view to test environments, which are not delayed
+order_of(lifecycle_environments).each do |env|
+  if can_promote_to?(env, latest_version_published, DELAY)
+    print "Promoting version #{latest_version_label} of #{CV_NAME} to #{env['name']}..."
+    run_task("#{KATELLO_URL}/content_view_versions/#{latest_version_id}/promote", {'environment_id' => env['id']})
+  end
+end
+
+# Clean up everything except for the last kept versions
+keep = 0 - KEEP
+content_view_versions[0..keep].each do |v|
+  print "Deleting version #{v['version']}..." 
+  delete_task("#{KATELLO_URL}/content_view_versions/#{v['id']}")
+end
