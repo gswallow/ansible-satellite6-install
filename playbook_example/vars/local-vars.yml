@@ -107,8 +107,8 @@ satellite_deployment_answers:
 # LDAP support
 satellite_ldap_ca_cert_path: "/tmp/ansible/ldap-ca.crt"
 satellite_ldap_ca_cert_dest_path: "/etc/pki/tls/certs/ldap-ca.crt"
-# satellite_ldap_remote_ca_cert: true
-# satellite_ldap_ca_cert_url: "https://my.server.com/ldap-ca.crt"
+satellite_ldap_remote_ca_cert: false
+satellite_ldap_ca_cert_url: ""
 
 # repositories to enable
 satellite_deployment_repositories:
