@@ -22,7 +22,7 @@
 - name: "LDAP | Get some weird Red Hatty hash from the copied cert"
   shell:
     cmd: "openssl x509 -noout -hash -in {{ satellite_ldap_ca_cert_dest_path }}"
-  registers: ca_cert_hash
+  register: "ca_cert_hash"
   tags:
     - "ldap"
 
