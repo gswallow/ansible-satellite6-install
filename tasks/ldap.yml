@@ -43,3 +43,10 @@
   tags:
     - "ldap"
 
+- name: "LDAP | setsebool nis_enabled on"
+  seboolean:
+    name: nis_enabled
+    state: yes
+    persistent: yes
+  tags:
+    - "ldap"
