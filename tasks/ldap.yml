@@ -16,20 +16,30 @@
     dest: "{{ satellite_ldap_ca_cert_dest_path }}"
     mode: "0644"
     owner: "root"
+  register: "ca_cert_file"
   tags:
     - "ldap"
 
-- name: "LDAP | Get some weird Red Hatty hash from the copied cert"
+- name: "LDAP | Get x509 hash from {{ satellite_ldap_ca_cert_dest_path }}"
   shell:
     cmd: "openssl x509 -noout -hash -in {{ satellite_ldap_ca_cert_dest_path }}"
   register: "ca_cert_hash"
   tags:
     - "ldap"
 
-- name: "LDAP | Create a symlink to the weird hash thing"
+- name: "LDAP | Create a symlink to /etc/pki/tls/certs/{{ ca_cert_hash.stdout}}.0"
   file:
     path: "/etc/pki/tls/certs/{{ ca_cert_hash.stdout }}.0"
     state: link
     src: "{{ satellite_ldap_ca_cert_path }}"
   tags:
     - "ldap"
+
+- name: "LDAP | Restart httpd"
+  service:
+    name: "httpd"
+    state: restarted
+  when: "ca_cert_file|changed"
+  tags:
+    - "ldap"
+
