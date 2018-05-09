@@ -14,7 +14,19 @@
   copy:
     src: "{{ satellite_ldap_ca_cert_path }}"
     dest: "{{ satellite_ldap_ca_cert_dest_path }}"
-  when: not satellite_ldap_remote_ca_cert
+    mode: "0644"
+    owner: "root"
   tags:
     - "ldap"
+
+- name: "LDAP | Get some weird Red Hatty hash from the copied cert"
+  shell:
+    cmd: "openssl x509 -noout -hash -in {{ satellite_ldap_ca_cert_dest_path }}"
+  registers: ca_cert_hash
+
+- name: "LDAP | Create a symlink to the weird hash thing"
+  file:
+    path: "/etc/pki/tls/certs/{{ ca_cert_hash.stdout }}.0"
+    state: link
+    target: "{{ satellite_ldap_ca_cert_path }}"
 
