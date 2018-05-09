@@ -30,6 +30,6 @@
   file:
     path: "/etc/pki/tls/certs/{{ ca_cert_hash.stdout }}.0"
     state: link
-    target: "{{ satellite_ldap_ca_cert_path }}"
+    src: "{{ satellite_ldap_ca_cert_path }}"
   tags:
     - "ldap"
