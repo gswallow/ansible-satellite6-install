@@ -23,10 +23,13 @@
   shell:
     cmd: "openssl x509 -noout -hash -in {{ satellite_ldap_ca_cert_dest_path }}"
   registers: ca_cert_hash
+  tags:
+    - "ldap"
 
 - name: "LDAP | Create a symlink to the weird hash thing"
   file:
     path: "/etc/pki/tls/certs/{{ ca_cert_hash.stdout }}.0"
     state: link
     target: "{{ satellite_ldap_ca_cert_path }}"
-
+  tags:
+    - "ldap"
