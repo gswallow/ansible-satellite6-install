@@ -93,6 +93,22 @@
     hour: 7
     job: "curl -u 'admin:{{ lookup('password', '/root/.satellite_password length=15 chars=ascii_letters') }}' -k -H 'content-type: application/json' -X PUT 'https://{{satellite_deployment_hostname_full }}/katello/api/organizations/1/sync_plans/1/sync' >& /dev/null"
 
+# Create content publish / recovery cron job
+- name: "Configure satellite | Create /usr/local/bin/publish_content.rb"
+  template:
+    src: "publish_content.rb.j2"
+    dest: "/usr/local/bin/publish_content.rb.j2"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: "Configure satellite | create content update cron job"
+  cron:
+    minute: 30
+    hour: 8
+    weekday: 2
+    job: "/usr/local/bin/publish_content.rb.j2"
+
 # Change default URLs
 - name: "Configure satellite | set foreman_url"
   shell: "HOME=/root hammer settings set
