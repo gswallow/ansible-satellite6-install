@@ -162,7 +162,7 @@ if is_old_enough?(latest_version_published, REFRESH)
   print "Publishing new version of the #{CV_NAME} content view..."
   run_task("#{KATELLO_URL}/content_views/#{my_content_view_id}/publish")
 else
-  puts "Not publishing #{CV_NAME} content view because the latest is less than 28 days old"
+  puts "Not publishing #{CV_NAME} content view because the latest is less than #{REFRESH} days old"
 end
 
 # Promote the newest version of the content view to test environments, which are not delayed
