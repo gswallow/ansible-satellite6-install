@@ -108,7 +108,14 @@ satellite_deployment_answers:
 satellite_ldap_ca_cert_path: "/tmp/ansible/ldap-ca.crt"
 satellite_ldap_ca_cert_dest_path: "/etc/pki/tls/certs/ldap-ca.crt"
 satellite_ldap_remote_ca_cert: false
+satellite_ldap_server_type: "active_directory"
+satellite_ldap_tls_enabled: true
+satellite_ldap_host: "ldap.ivytech.edu"
+satellite_ldap_port: 636
 satellite_ldap_ca_cert_url: ""
+satellite_ldap_base_dn: "DC=ivytech,DC=edu"
+satellite_ldap_query_filter: ""
+satellite_ldap_attr_login: "userPrincipalName"
 
 # repositories to enable
 satellite_deployment_repositories:

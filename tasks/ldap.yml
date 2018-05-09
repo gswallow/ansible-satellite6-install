@@ -50,3 +50,16 @@
     persistent: yes
   tags:
     - "ldap"
+
+- name: "LDAP | create LDAP auth source"
+  shell: "HOME=/root hammer auth-source ldap create 
+    --server-type {{ satellite_ldap_server_type }}
+    --host {{ satellite_ldap_host }}
+    --port {{ satellite_ldap_port }}
+    --tls {{ satellite_ldap_tls_enabled }}
+    --base-dn {{ satellite_ldap_base_dn }}
+    --ldap-filter {{ satellite_ldap_query_filter }}
+    --attr-login {{ satellite_ldap_attr_login }}
+    --onthefly-register false"
+  tags:
+    - "ldap"
