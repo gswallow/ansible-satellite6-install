@@ -108,14 +108,22 @@ satellite_deployment_answers:
 satellite_ldap_ca_cert_path: "/tmp/ansible/ldap-ca.crt"
 satellite_ldap_ca_cert_dest_path: "/etc/pki/tls/certs/ldap-ca.crt"
 satellite_ldap_remote_ca_cert: false
-satellite_ldap_server_type: "active_directory"
+satellite_ldap_server_type: "posix"
 satellite_ldap_tls_enabled: true
 satellite_ldap_host: "ldap.ivytech.edu"
 satellite_ldap_port: 636
 satellite_ldap_ca_cert_url: ""
-satellite_ldap_base_dn: "DC=ivytech,DC=edu"
-satellite_ldap_query_filter: ""
+satellite_ldap_bind_dn: "CN=anonbind,DC=Users,DC=ivytech,DC=edu"
+satellite_ldap_bind_pw: "set-this"
+satellite_ldap_attr_firstname: "givenName"
+satellite_ldap_attr_lastname: "sn"
+satellite_ldap_attr_login: "sAMAccountName"
+satellite_ldap_attr_mail: "mail"
+satellite_ldap_query_filter: "memberOf=CN=Administratorss,DC=Groups,DC=ivytech,DC=edu"
 satellite_ldap_attr_login: "userPrincipalName"
+satellite_ldap_base_dn: "DC=ivytech,DC=edu"
+satellite_ldap_groups_base_dn: "DC=Groups,DC=ivytech,DC=edu"
+
 
 # repositories to enable
 satellite_deployment_repositories:

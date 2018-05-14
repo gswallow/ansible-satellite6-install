@@ -31,7 +31,7 @@
   file:
     path: "/etc/pki/tls/certs/{{ ca_cert_hash.stdout }}.0"
     state: link
-    src: "{{ satellite_ldap_ca_cert_path }}"
+    src: "{{ satellite_ldap_ca_cert_dest_path }}"
   tags:
     - "ldap"
 
@@ -53,13 +53,21 @@
 
 - name: "LDAP | create LDAP auth source"
   shell: "HOME=/root hammer auth-source ldap create 
+    --name ldap 
     --server-type {{ satellite_ldap_server_type }}
     --host {{ satellite_ldap_host }}
     --port {{ satellite_ldap_port }}
     --tls {{ satellite_ldap_tls_enabled }}
+    --account '{{ satelite_ldap_bind_dn }}'
+    --account-password '{{satellite_ldap_bind_pw }}'
+    --attr-firstname {{ satellite_ldap_firstname_attr }}
+    --attr-lastname {{ satellite_ldap_lastname_attr }}
+    --attr-login {{ satellite_ldap_login_attr }}
+    --attr-mail {{ satellite_ldap_mail_attr }}
     --base-dn {{ satellite_ldap_base_dn }}
+    --groups-base {{ satellite_ldap_groups_base_dn }}
     --ldap-filter {{ satellite_ldap_query_filter }}
-    --attr-login {{ satellite_ldap_attr_login }}
-    --onthefly-register false"
+    --onthefly-register yes
+    --usergroup-sync yes"
   tags:
     - "ldap"
