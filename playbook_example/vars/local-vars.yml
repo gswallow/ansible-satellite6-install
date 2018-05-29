@@ -27,6 +27,12 @@ lvm_volumes:
     filesystem: xfs
     mount: /var/lib/pgsql
     mount_options: defaults,noatime,nodiratime,discard
+  - vg_name: vg04
+    lv_name: squid
+    disk: xvdj
+    mount: /var/spool/squid
+    mode: 1477
+    mount_options: defaults,noatime,nodiratime,discard
 
 # network - turn on/off foreman proxies
 satellite_foreman_proxy_dns: "false"
