@@ -52,7 +52,8 @@
     - "ldap"
 
 - name: "LDAP | create LDAP auth source"
-  shell: "HOME=/root hammer auth-source ldap create 
+  shell:
+    cmd: "HOME=/root hammer auth-source ldap create 
     --name ldap 
     --server-type {{ satellite_ldap_server_type }}
     --host {{ satellite_ldap_host }}
@@ -70,4 +71,30 @@
     --onthefly-register yes
     --usergroup-sync yes"
   tags:
+    - "ldap"
+
+- name: "LDAP | Get LDAP auth-source ID"
+  shell:
+    cmd: "HOME=/root hammer auth-source ldap list |
+    /bin/grep '{{ satellite_ldap_host }}' |
+    /bin/cut -f1 -d\ "
+  register: "auth_source_id"
+  tags:
+    - "ldap"
+
+- name: "LDAP | Create admin user group"
+  shell:
+    cmd: "HOME=/root hammer user-group create
+    --name '{{ satellite_admin_grp_name }}'
+    --admin ADMIN"
+  tags:
+    - "ldap"
+
+- name: "LDAP | Create admin external user group"
+  shell:
+    cmd: "HOME=/root hammer user-group create
+    --name '{{ satellite_external_admin_grp_name }}'
+    --user-group '{{ satellite_admin_grp_name }}'
+    --auth-source-id '{{ auth_source_id }}'"
+  tag:
     - "ldap"
